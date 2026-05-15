@@ -1,6 +1,17 @@
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import { Activity, Brain, Inbox, Settings as SettingsIcon, Users } from "lucide-react";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
+
+function LiveClock() {
+  const [t, setT] = useState<string>("");
+  useEffect(() => {
+    const tick = () => setT(new Date().toISOString().slice(0, 19).replace("T", " "));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+  return <span suppressHydrationWarning>{t || "\u00a0"}</span>;
+}
 
 const NAV = [
   { to: "/", label: "Live Runs", icon: Activity },
