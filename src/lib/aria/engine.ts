@@ -9,8 +9,8 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 const jitter = (a: number, b: number) => a + Math.random() * (b - a);
 const id = () => Math.random().toString(36).slice(2, 10);
 
-function emit(runId: string, e: Omit<AriaEvent, "at"> & { at?: number }) {
-  pushEvent(runId, { ...(e as AriaEvent), at: Date.now() });
+function emit(runId: string, e: Record<string, unknown> & { type: AriaEvent["type"] }) {
+  pushEvent(runId, { ...(e as object), at: Date.now() } as AriaEvent);
 }
 
 async function thinkStream(runId: string, agent: AgentName, text: string) {
