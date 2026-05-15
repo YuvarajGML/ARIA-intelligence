@@ -12,13 +12,14 @@ const SECRETS = [
 ];
 
 export const Route = createFileRoute("/settings")({
-  loader: () => fetch("/api/aria/settings").then((r) => r.json()).catch(() => ({ status: {} })),
   component: Page,
 });
 
 function Page() {
-  const data = Route.useLoaderData() as { status: Record<string, boolean> };
-  const status = data.status ?? {};
+  const [status, setStatus] = (require("react") as typeof import("react")).useState<Record<string, boolean>>({});
+  (require("react") as typeof import("react")).useEffect(() => {
+    fetch("/api/aria/settings").then((r) => r.json()).then((j) => setStatus(j.status ?? {})).catch(() => {});
+  }, []);
   return (
     <AppShell>
       <div className="space-y-6 max-w-3xl">
