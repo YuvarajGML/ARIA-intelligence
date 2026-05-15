@@ -8,7 +8,7 @@ const AGENTS: { name: AgentName; tools: string[]; color: string }[] = [
   { name: "Synthesizer", tools: ["lovable.ai.stream"], color: "oklch(0.78 0.16 155)" },
   {
     name: "Deliverer",
-    tools: ["email.send", "discord.send", "github.send"],
+    tools: ["email.send", "gmail.send", "discord.send", "github.send"],
     color: "oklch(0.78 0.16 25)",
   },
 ];

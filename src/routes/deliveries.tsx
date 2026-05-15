@@ -4,7 +4,13 @@ import { AppShell } from "@/components/aria/AppShell";
 import type { Delivery } from "@/lib/aria/types";
 import { Mail, MessageSquare, FileText, Github, ExternalLink } from "lucide-react";
 
-const ICON = { email: Mail, discord: MessageSquare, notion: FileText, github: Github } as const;
+const ICON = {
+  email: Mail,
+  gmail: Mail,
+  discord: MessageSquare,
+  notion: FileText,
+  github: Github,
+} as const;
 
 export const Route = createFileRoute("/deliveries")({
   component: Page,
@@ -13,7 +19,10 @@ export const Route = createFileRoute("/deliveries")({
 function Page() {
   const [items, setItems] = useState<Delivery[]>([]);
   useEffect(() => {
-    const fetchAll = () => fetch("/api/aria/deliveries").then((r) => r.json()).then((j) => setItems(j.deliveries));
+    const fetchAll = () =>
+      fetch("/api/aria/deliveries")
+        .then((r) => r.json())
+        .then((j) => setItems(j.deliveries));
     fetchAll();
     const t = setInterval(fetchAll, 3000);
     return () => clearInterval(t);
@@ -41,7 +50,11 @@ function Page() {
                   <div className="flex-1 min-w-0">
                     <div className="text-sm capitalize">
                       {d.channel} <span className="text-muted-foreground">·</span>{" "}
-                      <Link to="/runs/$id" params={{ id: d.runId }} className="font-mono text-xs text-primary hover:underline">
+                      <Link
+                        to="/runs/$id"
+                        params={{ id: d.runId }}
+                        className="font-mono text-xs text-primary hover:underline"
+                      >
                         {d.runId}
                       </Link>
                     </div>
@@ -53,7 +66,12 @@ function Page() {
                     {new Date(d.at).toISOString().slice(11, 19)}
                   </div>
                   {ok && d.target?.startsWith("http") && (
-                    <a href={d.target} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary">
+                    <a
+                      href={d.target}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-muted-foreground hover:text-primary"
+                    >
                       <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                   )}

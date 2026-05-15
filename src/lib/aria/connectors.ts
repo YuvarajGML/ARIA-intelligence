@@ -7,6 +7,7 @@ import {
   type GitHubDeliveryInput,
 } from "./github-analysis";
 import { createGitHubServiceFromEnv } from "./github";
+import { createGmailServiceFromEnv, type GmailAlertInput } from "./gmail";
 import type { Channel, Delivery, Evidence, PersonaId } from "./types";
 
 const SERPER_CACHE = new Map<string, { at: number; data: SerperResult[] }>();
@@ -86,6 +87,7 @@ export async function deliver(
   try {
     if (channel === "discord") return await sendDiscord(payload);
     if (channel === "email") return await sendEmail(payload);
+    if (channel === "gmail") return await sendGmail(payload);
     if (channel === "notion") return await sendNotion(payload);
     if (channel === "github") return await sendGithub(payload);
     return { channel, status: "failed", detail: "unknown channel" };
@@ -161,6 +163,29 @@ async function sendEmail(p: {
     status: "sent",
     target: "delivered@resend.dev",
     externalId: (body as { id?: string }).id,
+  };
+}
+
+async function sendGmail(p: {
+  runId: string;
+  topic: string;
+  report: string;
+  confidence: number;
+  persona: PersonaId;
+  topEvidence: Pick<Evidence, "title" | "url" | "source" | "snippet">[];
+}): Promise<Omit<Delivery, "id" | "runId" | "at">> {
+  const gmail = createGmailServiceFromEnv();
+  if ("error" in gmail) return { channel: "gmail", status: "failed", detail: gmail.error };
+
+  const input: GmailAlertInput = p;
+  const out = await gmail.sendAlert(input);
+
+  return {
+    channel: "gmail",
+    status: "sent",
+    target: process.env.GMAIL_TO,
+    externalId: out.id,
+    detail: out.threadId ? `thread ${out.threadId}` : undefined,
   };
 }
 

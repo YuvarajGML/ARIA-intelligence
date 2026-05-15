@@ -7,6 +7,11 @@ export const Route = createFileRoute("/api/aria/settings")({
         const names = [
           "SERPER_API_KEY",
           "RESEND_API_KEY",
+          "GMAIL_CLIENT_ID",
+          "GMAIL_CLIENT_SECRET",
+          "GMAIL_REFRESH_TOKEN",
+          "GMAIL_FROM",
+          "GMAIL_TO",
           "DISCORD_WEBHOOK_URL",
           "NOTION_API_KEY",
           "GITHUB_TOKEN",

@@ -1,6 +1,6 @@
 export type AgentName = "Researcher" | "Validator" | "Critic" | "Synthesizer" | "Deliverer";
 
-export type Channel = "email" | "discord" | "notion" | "github";
+export type Channel = "email" | "gmail" | "discord" | "notion" | "github";
 
 export type PersonaId = "student" | "founder" | "investor" | "custom";
 
@@ -44,8 +44,21 @@ export type AriaEvent =
   | { type: "run.started"; runId: string; topic: string; persona: PersonaId; at: number }
   | { type: "agent.started"; agent: AgentName; at: number }
   | { type: "agent.thinking"; agent: AgentName; token: string; at: number }
-  | { type: "agent.tool_call"; agent: AgentName; tool: string; args: Record<string, unknown>; at: number }
-  | { type: "agent.tool_result"; agent: AgentName; tool: string; ok: boolean; latency_ms: number; at: number }
+  | {
+      type: "agent.tool_call";
+      agent: AgentName;
+      tool: string;
+      args: Record<string, unknown>;
+      at: number;
+    }
+  | {
+      type: "agent.tool_result";
+      agent: AgentName;
+      tool: string;
+      ok: boolean;
+      latency_ms: number;
+      at: number;
+    }
   | { type: "agent.completed"; agent: AgentName; at: number }
   | { type: "evidence.added"; evidence: Evidence; at: number }
   | { type: "confidence.updated"; score: number; at: number }

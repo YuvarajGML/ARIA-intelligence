@@ -15,13 +15,20 @@ export const Route = createFileRoute("/api/aria/runs")({
         const persona = body.persona && PERSONAS[body.persona] ? body.persona : "founder";
         const depth = Math.max(1, Math.min(5, Number(body.depth ?? 3)));
         const channels = (body.channels ?? []).filter((c) =>
-          ["email", "discord", "notion", "github"].includes(c)
+          ["email", "gmail", "discord", "notion", "github"].includes(c),
         );
         const id = `run_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
         const run: Run = {
-          id, topic, persona, depth, channels,
-          status: "pending", confidence: 0, createdAt: new Date().toISOString(),
-          evidenceCount: 0, retries: 0,
+          id,
+          topic,
+          persona,
+          depth,
+          channels,
+          status: "pending",
+          confidence: 0,
+          createdAt: new Date().toISOString(),
+          evidenceCount: 0,
+          retries: 0,
         };
         createRun(run);
         ensureRun(id, { topic, persona, depth, channels });

@@ -6,6 +6,11 @@ import { CheckCircle2, AlertCircle } from "lucide-react";
 const SECRETS = [
   { name: "SERPER_API_KEY", desc: "Web search via Serper.dev" },
   { name: "RESEND_API_KEY", desc: "Email delivery" },
+  { name: "GMAIL_CLIENT_ID", desc: "Gmail OAuth client ID" },
+  { name: "GMAIL_CLIENT_SECRET", desc: "Gmail OAuth client secret" },
+  { name: "GMAIL_REFRESH_TOKEN", desc: "Gmail send refresh token" },
+  { name: "GMAIL_FROM", desc: "Authorized Gmail sender" },
+  { name: "GMAIL_TO", desc: "Gmail alert recipients" },
   { name: "DISCORD_WEBHOOK_URL", desc: "Discord channel webhook" },
   { name: "NOTION_API_KEY", desc: "Notion workspace access" },
   { name: "GITHUB_TOKEN", desc: "GitHub Issues and Contents API" },
