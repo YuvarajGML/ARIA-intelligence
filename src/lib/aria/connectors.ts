@@ -25,7 +25,7 @@ export async function serperSearch(query: string, num = 8): Promise<SerperResult
   const cached = SERPER_CACHE.get(key);
   if (cached && Date.now() - cached.at < 10 * 60_000) return cached.data;
 
-  const apiKey = process.env.SERPER_API_KEY;
+  const apiKey = process.env.SERP_API_KEY ?? process.env.SERPER_API_KEY;
   if (!apiKey) {
     return mockResults(query, num);
   }
@@ -52,23 +52,60 @@ export async function serperSearch(query: string, num = 8): Promise<SerperResult
 }
 
 function mockResults(query: string, n: number): SerperResult[] {
-  const sources = [
-    "techcrunch.com",
-    "arxiv.org",
-    "bloomberg.com",
-    "ft.com",
-    "github.com",
-    "stratechery.com",
-    "a16z.com",
-    "wsj.com",
+  const sources: { source: string; label: string; link: (q: string) => string }[] = [
+    {
+      source: "techcrunch.com",
+      label: "TechCrunch search",
+      link: (q) =>
+        `https://www.google.com/search?${new URLSearchParams({ q: `site:techcrunch.com ${q}` })}`,
+    },
+    {
+      source: "arxiv.org",
+      label: "arXiv search",
+      link: (q) =>
+        `https://arxiv.org/search/?${new URLSearchParams({ query: q, searchtype: "all", source: "header" })}`,
+    },
+    {
+      source: "bloomberg.com",
+      label: "Bloomberg search",
+      link: (q) => `https://www.bloomberg.com/search?${new URLSearchParams({ query: q })}`,
+    },
+    {
+      source: "ft.com",
+      label: "Financial Times search",
+      link: (q) => `https://www.ft.com/search?${new URLSearchParams({ q })}`,
+    },
+    {
+      source: "github.com",
+      label: "GitHub repository search",
+      link: (q) => `https://github.com/search?${new URLSearchParams({ q, type: "repositories" })}`,
+    },
+    {
+      source: "stratechery.com",
+      label: "Stratechery search",
+      link: (q) => `https://stratechery.com/?${new URLSearchParams({ s: q })}`,
+    },
+    {
+      source: "a16z.com",
+      label: "a16z search",
+      link: (q) => `https://a16z.com/?${new URLSearchParams({ s: q })}`,
+    },
+    {
+      source: "wsj.com",
+      label: "Wall Street Journal search",
+      link: (q) => `https://www.wsj.com/search?${new URLSearchParams({ query: q })}`,
+    },
   ];
-  return Array.from({ length: n }, (_, i) => ({
-    title: `${query}: insight ${i + 1}`,
-    link: `https://${sources[i % sources.length]}/post-${i + 1}`,
-    snippet: `Analysis of ${query} covering recent developments, market dynamics, and forward-looking signals (#${i + 1}).`,
-    source: sources[i % sources.length],
-    date: new Date(Date.now() - i * 86400_000).toISOString(),
-  }));
+  return Array.from({ length: n }, (_, i) => {
+    const item = sources[i % sources.length];
+    return {
+      title: `${item.label}: ${query}`,
+      link: item.link(query),
+      snippet: `Fallback discovery link for "${query}". Add SERP_API_KEY to retrieve exact article-level evidence instead of source search pages.`,
+      source: item.source,
+      date: new Date(Date.now() - i * 86400_000).toISOString(),
+    };
+  });
 }
 
 // ---- Delivery channels ----

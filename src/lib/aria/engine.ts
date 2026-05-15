@@ -22,23 +22,30 @@ async function thinkStream(runId: string, agent: AgentName, text: string) {
   }
 }
 
-async function callLovableAI(
+async function callGrokAI(
   messages: { role: string; content: string }[],
   onToken: (t: string) => void,
 ) {
-  const apiKey = process.env.LOVABLE_API_KEY;
+  const apiKey = process.env.GROK_API_KEY;
   if (!apiKey) {
-    onToken("(LOVABLE_API_KEY not configured — emitting placeholder report)\n");
+    onToken("(GROK_API_KEY not configured - emitting placeholder report)\n");
     return;
   }
+  const config = getGrokConfig(apiKey);
   try {
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch(config.url, {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "google/gemini-2.5-flash", stream: true, messages }),
+      body: JSON.stringify({
+        model: config.model,
+        stream: true,
+        temperature: 0.4,
+        messages,
+      }),
     });
     if (!res.ok || !res.body) {
-      onToken(`(AI gateway error ${res.status})`);
+      const body = await res.text().catch(() => "");
+      onToken(`(Grok API error ${res.status}${body ? `: ${body.slice(0, 240)}` : ""})`);
       return;
     }
     const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
@@ -64,8 +71,21 @@ async function callLovableAI(
       }
     }
   } catch (err) {
-    onToken(`(AI error: ${(err as Error).message})`);
+    onToken(`(Grok error: ${(err as Error).message})`);
   }
+}
+
+function getGrokConfig(apiKey: string) {
+  const isGroqKey = apiKey.startsWith("gsk_");
+  return {
+    url:
+      process.env.GROK_API_URL ??
+      (isGroqKey
+        ? "https://api.groq.com/openai/v1/chat/completions"
+        : "https://api.x.ai/v1/chat/completions"),
+    model:
+      process.env.GROK_MODEL ?? (isGroqKey ? "llama-3.3-70b-versatile" : "grok-4.20-reasoning"),
+  };
 }
 
 export async function runAgentPipeline(runId: string, req: RunRequest) {
@@ -221,11 +241,11 @@ Write a ${persona.tone} ${persona.label} report (max ~600 words). Use markdown h
     emit(runId, {
       type: "agent.tool_call",
       agent: "Synthesizer",
-      tool: "lovable.ai.stream",
-      args: { model: "google/gemini-2.5-flash" },
+      tool: "grok.chat.stream",
+      args: { model: getGrokConfig(process.env.GROK_API_KEY ?? "").model },
     });
     const t0 = Date.now();
-    await callLovableAI(
+    await callGrokAI(
       [
         { role: "system", content: persona.systemPrompt },
         { role: "user", content: userPrompt },
@@ -235,7 +255,7 @@ Write a ${persona.tone} ${persona.label} report (max ~600 words). Use markdown h
     emit(runId, {
       type: "agent.tool_result",
       agent: "Synthesizer",
-      tool: "lovable.ai.stream",
+      tool: "grok.chat.stream",
       ok: true,
       latency_ms: Date.now() - t0,
     });

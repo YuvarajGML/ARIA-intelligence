@@ -5,7 +5,7 @@ export const Route = createFileRoute("/api/aria/settings")({
     handlers: {
       GET: async () => {
         const names = [
-          "SERPER_API_KEY",
+          "SERP_API_KEY",
           "RESEND_API_KEY",
           "GMAIL_CLIENT_ID",
           "GMAIL_CLIENT_SECRET",
@@ -16,7 +16,8 @@ export const Route = createFileRoute("/api/aria/settings")({
           "NOTION_API_KEY",
           "GITHUB_TOKEN",
           "GITHUB_REPO",
-          "LOVABLE_API_KEY",
+          "GROK_API_KEY",
+          "GROK_MODEL",
         ];
         const status: Record<string, boolean> = {};
         for (const n of names) status[n] = !!process.env[n];

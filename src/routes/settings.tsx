@@ -4,7 +4,7 @@ import { AppShell } from "@/components/aria/AppShell";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 
 const SECRETS = [
-  { name: "SERPER_API_KEY", desc: "Web search via Serper.dev" },
+  { name: "SERP_API_KEY", desc: "Web search via Serper.dev" },
   { name: "RESEND_API_KEY", desc: "Email delivery" },
   { name: "GMAIL_CLIENT_ID", desc: "Gmail OAuth client ID" },
   { name: "GMAIL_CLIENT_SECRET", desc: "Gmail OAuth client secret" },
@@ -15,7 +15,8 @@ const SECRETS = [
   { name: "NOTION_API_KEY", desc: "Notion workspace access" },
   { name: "GITHUB_TOKEN", desc: "GitHub Issues and Contents API" },
   { name: "GITHUB_REPO", desc: "GitHub issues and /reports commits" },
-  { name: "LOVABLE_API_KEY", desc: "Lovable AI Gateway (auto-provisioned)" },
+  { name: "GROK_API_KEY", desc: "Grok/Groq report generation" },
+  { name: "GROK_MODEL", desc: "Optional model override" },
 ];
 
 export const Route = createFileRoute("/settings")({
