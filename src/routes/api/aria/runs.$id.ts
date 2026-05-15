@@ -6,7 +6,7 @@ export const Route = createFileRoute("/api/aria/runs/$id")({
     handlers: {
       GET: async ({ params }) => {
         const rec = getRun(params.id);
-        if (!rec) return new Response("not found", { status: 404 });
+        if (!rec) return Response.json({ run: null, events: [], deliveries: [], report: "" }, { status: 404 });
         return Response.json({
           run: rec.run,
           events: rec.events,
