@@ -22,7 +22,10 @@ async function thinkStream(runId: string, agent: AgentName, text: string) {
   }
 }
 
-async function callLovableAI(messages: { role: string; content: string }[], onToken: (t: string) => void) {
+async function callLovableAI(
+  messages: { role: string; content: string }[],
+  onToken: (t: string) => void,
+) {
   const apiKey = process.env.LOVABLE_API_KEY;
   if (!apiKey) {
     onToken("(LOVABLE_API_KEY not configured — emitting placeholder report)\n");
@@ -55,7 +58,9 @@ async function callLovableAI(messages: { role: string; content: string }[], onTo
           const j = JSON.parse(data);
           const tok = j.choices?.[0]?.delta?.content;
           if (tok) onToken(tok);
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
       }
     }
   } catch (err) {
@@ -70,7 +75,7 @@ export async function runAgentPipeline(runId: string, req: RunRequest) {
   const persona = PERSONAS[req.persona];
   let confidence = 0;
   let attempt = 0;
-  let evidence: Evidence[] = [];
+  const evidence: Evidence[] = [];
   let verdictPassed = false;
 
   try {
@@ -85,22 +90,32 @@ export async function runAgentPipeline(runId: string, req: RunRequest) {
         "Researcher",
         attempt === 1
           ? `Decomposing query "${req.topic}" into ${req.depth} sub-queries for ${persona.label} persona.`
-          : `Refining queries based on critic feedback. Targeting authoritative + recent sources.`
+          : `Refining queries based on critic feedback. Targeting authoritative + recent sources.`,
       );
 
       const subQueries = buildSubQueries(req.topic, req.depth, attempt > 1);
       for (const q of subQueries) {
-        emit(runId, { type: "agent.tool_call", agent: "Researcher", tool: "serper.search", args: { q } });
+        emit(runId, {
+          type: "agent.tool_call",
+          agent: "Researcher",
+          tool: "serper.search",
+          args: { q },
+        });
         const t0 = Date.now();
         const results = await serperSearch(q, 5 + req.depth);
         emit(runId, {
-          type: "agent.tool_result", agent: "Researcher", tool: "serper.search",
-          ok: true, latency_ms: Date.now() - t0,
+          type: "agent.tool_result",
+          agent: "Researcher",
+          tool: "serper.search",
+          ok: true,
+          latency_ms: Date.now() - t0,
         });
         for (const r of results.slice(0, 4)) {
           const ev: Evidence = {
             id: id(),
-            url: r.link, title: r.title, snippet: r.snippet,
+            url: r.link,
+            title: r.title,
+            snippet: r.snippet,
             source: r.source ?? "web",
             score: 0,
             publishedAt: r.date,
@@ -115,12 +130,20 @@ export async function runAgentPipeline(runId: string, req: RunRequest) {
 
       // Validator
       emit(runId, { type: "agent.started", agent: "Validator" });
-      await thinkStream(runId, "Validator", "Scoring sources by recency, authority, and relevance.");
+      await thinkStream(
+        runId,
+        "Validator",
+        "Scoring sources by recency, authority, and relevance.",
+      );
       for (const ev of evidence) {
         const recency = ev.publishedAt
           ? Math.max(0, 1 - (Date.now() - new Date(ev.publishedAt).getTime()) / (90 * 86400_000))
           : 0.4;
-        const authority = /arxiv|bloomberg|ft|wsj|stratechery|a16z|nature|nytimes|reuters/.test(ev.source) ? 0.9 : 0.55;
+        const authority = /arxiv|bloomberg|ft|wsj|stratechery|a16z|nature|nytimes|reuters/.test(
+          ev.source,
+        )
+          ? 0.9
+          : 0.55;
         const relevance = 0.5 + Math.random() * 0.5;
         ev.score = +(0.4 * authority + 0.3 * recency + 0.3 * relevance).toFixed(2);
       }
@@ -128,22 +151,44 @@ export async function runAgentPipeline(runId: string, req: RunRequest) {
       evidence.sort((a, b) => b.score - a.score);
       const dropped = evidence.splice(Math.max(6, evidence.length - 2));
       emit(runId, {
-        type: "agent.tool_call", agent: "Validator", tool: "score.evidence",
+        type: "agent.tool_call",
+        agent: "Validator",
+        tool: "score.evidence",
         args: { kept: evidence.length, dropped: dropped.length },
       });
-      emit(runId, { type: "agent.tool_result", agent: "Validator", tool: "score.evidence", ok: true, latency_ms: 240 });
-      confidence = +(evidence.reduce((s, e) => s + e.score, 0) / Math.max(1, evidence.length)).toFixed(2);
+      emit(runId, {
+        type: "agent.tool_result",
+        agent: "Validator",
+        tool: "score.evidence",
+        ok: true,
+        latency_ms: 240,
+      });
+      confidence = +(
+        evidence.reduce((s, e) => s + e.score, 0) / Math.max(1, evidence.length)
+      ).toFixed(2);
       emit(runId, { type: "confidence.updated", score: confidence });
       emit(runId, { type: "agent.completed", agent: "Validator" });
       await sleep(300);
 
       // Critic
       emit(runId, { type: "agent.started", agent: "Critic" });
-      await thinkStream(runId, "Critic", "Auditing coverage, contradictions, and source diversity.");
+      await thinkStream(
+        runId,
+        "Critic",
+        "Auditing coverage, contradictions, and source diversity.",
+      );
       const passed = attempt > 1 || (confidence >= 0.62 && Math.random() > 0.25);
       const reasons = passed
-        ? ["Sufficient source diversity", "No major contradictions", `Confidence ${Math.round(confidence * 100)}% ≥ threshold`]
-        : ["Coverage gap on recent quarter", "Low source diversity", "Schedule refined re-research"];
+        ? [
+            "Sufficient source diversity",
+            "No major contradictions",
+            `Confidence ${Math.round(confidence * 100)}% ≥ threshold`,
+          ]
+        : [
+            "Coverage gap on recent quarter",
+            "Low source diversity",
+            "Schedule refined re-research",
+          ];
       emit(runId, { type: "critic.verdict", verdict: { score: confidence, passed, reasons } });
       emit(runId, { type: "agent.completed", agent: "Critic" });
       verdictPassed = passed;
@@ -155,7 +200,11 @@ export async function runAgentPipeline(runId: string, req: RunRequest) {
 
     // Synthesizer
     emit(runId, { type: "agent.started", agent: "Synthesizer" });
-    await thinkStream(runId, "Synthesizer", `Drafting ${persona.label.toLowerCase()} report with ${evidence.length} validated sources.`);
+    await thinkStream(
+      runId,
+      "Synthesizer",
+      `Drafting ${persona.label.toLowerCase()} report with ${evidence.length} validated sources.`,
+    );
     const sourcesBlock = evidence
       .slice(0, 8)
       .map((e, i) => `[${i + 1}] ${e.title} — ${e.source} (${e.url})`)
@@ -169,16 +218,27 @@ ${sourcesBlock}
 
 Write a ${persona.tone} ${persona.label} report (max ~600 words). Use markdown headings for each section. Cite sources inline as [1], [2], etc. End with a "Sources" list.`;
 
-    emit(runId, { type: "agent.tool_call", agent: "Synthesizer", tool: "lovable.ai.stream", args: { model: "google/gemini-2.5-flash" } });
+    emit(runId, {
+      type: "agent.tool_call",
+      agent: "Synthesizer",
+      tool: "lovable.ai.stream",
+      args: { model: "google/gemini-2.5-flash" },
+    });
     const t0 = Date.now();
     await callLovableAI(
       [
         { role: "system", content: persona.systemPrompt },
         { role: "user", content: userPrompt },
       ],
-      (tok) => emit(runId, { type: "report.chunk", token: tok })
+      (tok) => emit(runId, { type: "report.chunk", token: tok }),
     );
-    emit(runId, { type: "agent.tool_result", agent: "Synthesizer", tool: "lovable.ai.stream", ok: true, latency_ms: Date.now() - t0 });
+    emit(runId, {
+      type: "agent.tool_result",
+      agent: "Synthesizer",
+      tool: "lovable.ai.stream",
+      ok: true,
+      latency_ms: Date.now() - t0,
+    });
     emit(runId, { type: "agent.completed", agent: "Synthesizer" });
     await sleep(300);
 
@@ -186,16 +246,29 @@ Write a ${persona.tone} ${persona.label} report (max ~600 words). Use markdown h
     if (req.channels.length > 0) {
       emit(runId, { type: "agent.started", agent: "Deliverer" });
       const report = getReport(runId);
-      const top = evidence.slice(0, 5).map((e) => ({ title: e.title, url: e.url }));
+      const top = evidence.slice(0, 5).map((e) => ({
+        title: e.title,
+        url: e.url,
+        source: e.source,
+        snippet: e.snippet,
+      }));
       for (const ch of req.channels) {
         emit(runId, { type: "agent.tool_call", agent: "Deliverer", tool: `${ch}.send`, args: {} });
         const t1 = Date.now();
         const out = await deliver(ch as Channel, {
-          runId, topic: req.topic, report, confidence, topEvidence: top,
+          runId,
+          topic: req.topic,
+          report,
+          confidence,
+          persona: req.persona,
+          topEvidence: top,
         });
         emit(runId, {
-          type: "agent.tool_result", agent: "Deliverer", tool: `${ch}.send`,
-          ok: out.status === "sent", latency_ms: Date.now() - t1,
+          type: "agent.tool_result",
+          agent: "Deliverer",
+          tool: `${ch}.send`,
+          ok: out.status === "sent",
+          latency_ms: Date.now() - t1,
         });
         emit(runId, {
           type: "delivery.sent",
@@ -243,5 +316,5 @@ export function ensureRun(runId: string, req: RunRequest) {
 
 export function isStarted(runId: string) {
   const rec = getRun(runId);
-  return STARTED.has(runId) || (rec?.run.status !== "pending");
+  return STARTED.has(runId) || rec?.run.status !== "pending";
 }

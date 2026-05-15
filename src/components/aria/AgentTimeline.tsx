@@ -6,7 +6,11 @@ const AGENTS: { name: AgentName; tools: string[]; color: string }[] = [
   { name: "Validator", tools: ["score.evidence"], color: "oklch(0.75 0.16 280)" },
   { name: "Critic", tools: ["audit"], color: "oklch(0.82 0.16 75)" },
   { name: "Synthesizer", tools: ["lovable.ai.stream"], color: "oklch(0.78 0.16 155)" },
-  { name: "Deliverer", tools: ["email.send", "discord.send"], color: "oklch(0.78 0.16 25)" },
+  {
+    name: "Deliverer",
+    tools: ["email.send", "discord.send", "github.send"],
+    color: "oklch(0.78 0.16 25)",
+  },
 ];
 
 interface AgentState {
@@ -38,7 +42,9 @@ export function AgentTimeline({ events }: { events: AriaEvent[] }) {
 
   return (
     <div className="rounded-xl border border-border bg-card/60 p-5">
-      <div className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-4">Agent pipeline</div>
+      <div className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-4">
+        Agent pipeline
+      </div>
       <div className="grid grid-cols-5 gap-3">
         {AGENTS.map((a) => {
           const s = states.get(a.name)!;
@@ -52,7 +58,10 @@ export function AgentTimeline({ events }: { events: AriaEvent[] }) {
                 }`}
                 style={{
                   borderColor: done || running ? a.color : "oklch(0.30 0.02 260 / 0.6)",
-                  backgroundColor: done || running ? `color-mix(in oklab, ${a.color} 18%, transparent)` : "transparent",
+                  backgroundColor:
+                    done || running
+                      ? `color-mix(in oklab, ${a.color} 18%, transparent)`
+                      : "transparent",
                 }}
               >
                 <span
@@ -62,7 +71,9 @@ export function AgentTimeline({ events }: { events: AriaEvent[] }) {
                   {a.name[0]}
                 </span>
                 {done && (
-                  <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-success border-2 border-card flex items-center justify-center text-[8px] text-background font-bold">✓</span>
+                  <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-success border-2 border-card flex items-center justify-center text-[8px] text-background font-bold">
+                    ✓
+                  </span>
                 )}
               </div>
               <div className="font-mono text-[11px] font-medium">{a.name}</div>
