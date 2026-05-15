@@ -9,16 +9,46 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as PersonasRouteImport } from './routes/personas'
+import { Route as DeliveriesRouteImport } from './routes/deliveries'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RunsIdRouteImport } from './routes/runs.$id'
+import { Route as ApiAriaSettingsRouteImport } from './routes/api/aria/settings'
 import { Route as ApiAriaSearchRouteImport } from './routes/api/aria/search'
 import { Route as ApiAriaRunsRouteImport } from './routes/api/aria/runs'
 import { Route as ApiAriaDeliveriesRouteImport } from './routes/api/aria/deliveries'
 import { Route as ApiAriaRunsIdRouteImport } from './routes/api/aria/runs.$id'
 import { Route as ApiAriaRunsIdEventsRouteImport } from './routes/api/aria/runs.$id.events'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PersonasRoute = PersonasRouteImport.update({
+  id: '/personas',
+  path: '/personas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeliveriesRoute = DeliveriesRouteImport.update({
+  id: '/deliveries',
+  path: '/deliveries',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RunsIdRoute = RunsIdRouteImport.update({
+  id: '/runs/$id',
+  path: '/runs/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAriaSettingsRoute = ApiAriaSettingsRouteImport.update({
+  id: '/api/aria/settings',
+  path: '/api/aria/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAriaSearchRoute = ApiAriaSearchRouteImport.update({
@@ -49,26 +79,41 @@ const ApiAriaRunsIdEventsRoute = ApiAriaRunsIdEventsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/deliveries': typeof DeliveriesRoute
+  '/personas': typeof PersonasRoute
+  '/settings': typeof SettingsRoute
+  '/runs/$id': typeof RunsIdRoute
   '/api/aria/deliveries': typeof ApiAriaDeliveriesRoute
   '/api/aria/runs': typeof ApiAriaRunsRouteWithChildren
   '/api/aria/search': typeof ApiAriaSearchRoute
+  '/api/aria/settings': typeof ApiAriaSettingsRoute
   '/api/aria/runs/$id': typeof ApiAriaRunsIdRouteWithChildren
   '/api/aria/runs/$id/events': typeof ApiAriaRunsIdEventsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/deliveries': typeof DeliveriesRoute
+  '/personas': typeof PersonasRoute
+  '/settings': typeof SettingsRoute
+  '/runs/$id': typeof RunsIdRoute
   '/api/aria/deliveries': typeof ApiAriaDeliveriesRoute
   '/api/aria/runs': typeof ApiAriaRunsRouteWithChildren
   '/api/aria/search': typeof ApiAriaSearchRoute
+  '/api/aria/settings': typeof ApiAriaSettingsRoute
   '/api/aria/runs/$id': typeof ApiAriaRunsIdRouteWithChildren
   '/api/aria/runs/$id/events': typeof ApiAriaRunsIdEventsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/deliveries': typeof DeliveriesRoute
+  '/personas': typeof PersonasRoute
+  '/settings': typeof SettingsRoute
+  '/runs/$id': typeof RunsIdRoute
   '/api/aria/deliveries': typeof ApiAriaDeliveriesRoute
   '/api/aria/runs': typeof ApiAriaRunsRouteWithChildren
   '/api/aria/search': typeof ApiAriaSearchRoute
+  '/api/aria/settings': typeof ApiAriaSettingsRoute
   '/api/aria/runs/$id': typeof ApiAriaRunsIdRouteWithChildren
   '/api/aria/runs/$id/events': typeof ApiAriaRunsIdEventsRoute
 }
@@ -76,43 +121,98 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/deliveries'
+    | '/personas'
+    | '/settings'
+    | '/runs/$id'
     | '/api/aria/deliveries'
     | '/api/aria/runs'
     | '/api/aria/search'
+    | '/api/aria/settings'
     | '/api/aria/runs/$id'
     | '/api/aria/runs/$id/events'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/deliveries'
+    | '/personas'
+    | '/settings'
+    | '/runs/$id'
     | '/api/aria/deliveries'
     | '/api/aria/runs'
     | '/api/aria/search'
+    | '/api/aria/settings'
     | '/api/aria/runs/$id'
     | '/api/aria/runs/$id/events'
   id:
     | '__root__'
     | '/'
+    | '/deliveries'
+    | '/personas'
+    | '/settings'
+    | '/runs/$id'
     | '/api/aria/deliveries'
     | '/api/aria/runs'
     | '/api/aria/search'
+    | '/api/aria/settings'
     | '/api/aria/runs/$id'
     | '/api/aria/runs/$id/events'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DeliveriesRoute: typeof DeliveriesRoute
+  PersonasRoute: typeof PersonasRoute
+  SettingsRoute: typeof SettingsRoute
+  RunsIdRoute: typeof RunsIdRoute
   ApiAriaDeliveriesRoute: typeof ApiAriaDeliveriesRoute
   ApiAriaRunsRoute: typeof ApiAriaRunsRouteWithChildren
   ApiAriaSearchRoute: typeof ApiAriaSearchRoute
+  ApiAriaSettingsRoute: typeof ApiAriaSettingsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/personas': {
+      id: '/personas'
+      path: '/personas'
+      fullPath: '/personas'
+      preLoaderRoute: typeof PersonasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/deliveries': {
+      id: '/deliveries'
+      path: '/deliveries'
+      fullPath: '/deliveries'
+      preLoaderRoute: typeof DeliveriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/runs/$id': {
+      id: '/runs/$id'
+      path: '/runs/$id'
+      fullPath: '/runs/$id'
+      preLoaderRoute: typeof RunsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/aria/settings': {
+      id: '/api/aria/settings'
+      path: '/api/aria/settings'
+      fullPath: '/api/aria/settings'
+      preLoaderRoute: typeof ApiAriaSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/aria/search': {
@@ -179,10 +279,25 @@ const ApiAriaRunsRouteWithChildren = ApiAriaRunsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DeliveriesRoute: DeliveriesRoute,
+  PersonasRoute: PersonasRoute,
+  SettingsRoute: SettingsRoute,
+  RunsIdRoute: RunsIdRoute,
   ApiAriaDeliveriesRoute: ApiAriaDeliveriesRoute,
   ApiAriaRunsRoute: ApiAriaRunsRouteWithChildren,
   ApiAriaSearchRoute: ApiAriaSearchRoute,
+  ApiAriaSettingsRoute: ApiAriaSettingsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
