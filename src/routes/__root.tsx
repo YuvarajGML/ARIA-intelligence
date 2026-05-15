@@ -72,14 +72,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "ARIA- Intelligence" },
+      { name: "description", content: "Insight Weaver is an autonomous AI platform that researches, analyzes, and delivers persona-specific reports." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "ARIA- Intelligence" },
+      { property: "og:description", content: "Insight Weaver is an autonomous AI platform that researches, analyzes, and delivers persona-specific reports." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "ARIA- Intelligence" },
+      { name: "twitter:description", content: "Insight Weaver is an autonomous AI platform that researches, analyzes, and delivers persona-specific reports." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/78327019-0c71-4653-961c-985287d60e68/id-preview-675fa868--b1957736-1195-4f99-81dd-c7c16195cd8d.lovable.app-1778864391297.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/78327019-0c71-4653-961c-985287d60e68/id-preview-675fa868--b1957736-1195-4f99-81dd-c7c16195cd8d.lovable.app-1778864391297.png" },
     ],
     links: [
       {
