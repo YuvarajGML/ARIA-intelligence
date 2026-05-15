@@ -75,7 +75,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
                 {loc.pathname === "/" ? "live runs" : loc.pathname.slice(1)}
               </div>
               <div className="font-mono text-[11px] text-muted-foreground">
-                {new Date().toISOString().slice(0, 19).replace("T", " ")}
+                <LiveClock />
               </div>
             </div>
           </header>
