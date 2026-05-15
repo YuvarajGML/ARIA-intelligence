@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/aria/AppShell";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 
@@ -16,8 +17,8 @@ export const Route = createFileRoute("/settings")({
 });
 
 function Page() {
-  const [status, setStatus] = (require("react") as typeof import("react")).useState<Record<string, boolean>>({});
-  (require("react") as typeof import("react")).useEffect(() => {
+  const [status, setStatus] = useState<Record<string, boolean>>({});
+  useEffect(() => {
     fetch("/api/aria/settings").then((r) => r.json()).then((j) => setStatus(j.status ?? {})).catch(() => {});
   }, []);
   return (
