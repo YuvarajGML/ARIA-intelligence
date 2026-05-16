@@ -2,6 +2,8 @@
 
 A modern full-stack web application built with **TanStack Start**, **React**, **TypeScript**, and **Tailwind CSS**. This project provides a foundation for building interactive, type-safe web applications.
 
+**Live Demo**: [https://6a07ebad49354371b3afaf12--frolicking-smakager-924ac0.netlify.app/](https://6a07ebad49354371b3afaf12--frolicking-smakager-924ac0.netlify.app/)
+
 ## 🚀 Tech Stack
 
 - **Framework**: [TanStack Start](https://tanstack.com/start/latest) - Full-stack React framework
@@ -150,7 +152,6 @@ All components are styled with Tailwind CSS for a consistent design system.
 
 ## 🌐 Deployment
 
-### Live Demo
 Visit the live application: [https://6a07ebad49354371b3afaf12--frolicking-smakager-924ac0.netlify.app/](https://6a07ebad49354371b3afaf12--frolicking-smakager-924ac0.netlify.app/)
 
 ### Build & Deploy
