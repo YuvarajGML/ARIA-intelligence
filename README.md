@@ -1,6 +1,6 @@
 # Insight Weaver
 
-A modern full-stack web application built with **TanStack Start**, **React**, **TypeScript**, and **Tailwind CSS**. This project provides a foundation for building interactive, type-safe web applications with server-side rendering capabilities and a component-rich UI.
+A modern full-stack web application built with **TanStack Start**, **React**, **TypeScript**, and **Tailwind CSS**. This project provides a foundation for building interactive, type-safe web applications.
 
 ## 🚀 Tech Stack
 
@@ -150,12 +150,13 @@ All components are styled with Tailwind CSS for a consistent design system.
 
 ## 🌐 Deployment
 
-### Cloudflare
-This project includes Cloudflare integration via `@cloudflare/vite-plugin`. To deploy:
+### Live Demo
+Visit the live application: [https://6a07ebad49354371b3afaf12--frolicking-smakager-924ac0.netlify.app/](https://6a07ebad49354371b3afaf12--frolicking-smakager-924ac0.netlify.app/)
 
+### Build & Deploy
 ```bash
 npm run build
-# Deploy to Cloudflare Pages or Workers
+# Deploy to Netlify, Vercel, or Cloudflare
 ```
 
 ## 📖 Documentation
