@@ -154,10 +154,9 @@ All components are styled with Tailwind CSS for a consistent design system.
 
 Visit the live application: [https://6a07ebad49354371b3afaf12--frolicking-smakager-924ac0.netlify.app/](https://6a07ebad49354371b3afaf12--frolicking-smakager-924ac0.netlify.app/)
 
-### Build & Deploy
 ```bash
 npm run build
-# Deploy to Netlify, Vercel, or Cloudflare
+# Deploy to Netlify
 ```
 
 ## 📖 Documentation
